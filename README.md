@@ -2,5 +2,7 @@
 
 ##TODO:
 
-- finir machine séquentielle écriture fichier ps
+
 - faire des tests de performances (Ada.time)
+- Faire un paquetage de tri plus générique
+- Ecrire le rapport
