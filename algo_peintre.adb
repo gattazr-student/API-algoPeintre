@@ -2,11 +2,9 @@ with Ada.Command_Line;
 with off_struct; use off_struct;
 with off_file; use off_file;
 with tri_packet; use tri_packet;
---with ps_file;
+with ps_file; use ps_file;
 
-with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Float_Text_IO; use Ada.Float_Text_IO;
+with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 
 procedure algo_peintre is
@@ -15,7 +13,8 @@ procedure algo_peintre is
 	package IO renames Ada.Text_IO;
 	package SU renames Ada.Strings.Unbounded;
 
-	wFileName : SU.Unbounded_String;
+	wInFileName : SU.Unbounded_String;
+	wOutFileName : SU.Unbounded_String;
 	wNbSommets : Integer;
 	wNbFormes : Integer;
 	wSommets : pSommet_T;
@@ -32,11 +31,11 @@ procedure algo_peintre is
 	function file_exists (aFileName : String) return Boolean is
 		wFile : Ada.Text_IO.File_Type;
 	begin
-		Open (wFile, In_File, aFileName);
-		Close (wFile);
+		IO.Open (wFile, IO.In_File, aFileName);
+		IO.Close (wFile);
 	return True;
 		exception
-			when Name_Error =>
+			when IO.Name_Error =>
 		return False;
 	end file_exists;
 
@@ -110,27 +109,33 @@ procedure algo_peintre is
 	end affichage_debug;
 begin
 
-	if CLI.Argument_Count < 1 then
-		IO.Put("No args");
+	if CLI.Argument_Count < 2 then
+		IO.Put("Not enough args");
 	else
-		--wFileName := new String();
-		wFileName := SU.To_Unbounded_String(CLI.argument(1));
-		if not file_exists(SU.To_String(wFileName)) then
+		wInFileName := SU.To_Unbounded_String(CLI.argument(1));
+		wOutFileName := SU.To_Unbounded_String(CLI.argument(2));
+		if not file_exists(SU.To_String(wInFileName)) then
 			IO.Put("No such file");
 		else
 			-- TODO : rajouter timer
-			file_to_sommets_formes(SU.To_String(wFileName), wNbSommets, wNbFormes, wSommets, wFormes);
+			file_to_sommets_formes(SU.To_String(wInFileName), wNbSommets, wNbFormes, wSommets, wFormes);
 
 			getMinMaxXYZ(wSommets, wNbSommets, wMinX, wMaxX, wMinY, wMaxY, wMinZ, wMaxZ);
 			-- Tri par paquet
-			-- le tri est effectué après la lecture du fichier pour permettre une meilleur séparation du probl!me
-			-- Effectuer les deux en même temps implique une complexité de n alors qu'effectuer l'un puis l'autre une complexité de 2n soit de n.
+			-- le tri est effectué après la lecture du fichier pour permettre une meilleur séparation du problème
+			-- Effectuer les deux en même temps implique une complexité de n alors qu'effectuer l'un puis l'autre
+			-- implique une complexité de 2n qui est donc une complexité de n aussi.
 			-- La compléxité étant la même, nous avons donc décidé de séparer le tri de la lecture du fichier.
 			triParPaquet(wFormes, wSommets, wNbFormes, wMinZ, wMaxZ, wFormesSorted);
+
+			forme_list_t_to_ps(SU.To_String(wOutFileName), wFormesSorted, wSommets, wNbFormes+1, wMinX, wMaxX, wMinY, wMaxY);
+
 
 			if DEBUG then
 				affichage_debug;
 			end if;
+
+
 
 			-- !!! DEALLOCATE !!!
 			libererSommet_T(wSommets);

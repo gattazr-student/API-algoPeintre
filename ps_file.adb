@@ -1,103 +1,85 @@
-with off_struct; use off_struct;
-with off_file; use off_file;
-with tri_packet; use tri_packet;
-
-with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Ada.Float_Text_IO; use Ada.Integer_Text_IO;
+with machine_seq; use machine_seq;
+with Ada.Text_IO;
 
 package body ps_file is
 
-	-- fonction qui trouve la première liste de formes non vide du tableau de liste de formes
-	function demarrer(aFormes : in Forme_List_T) return integer is -- penser a faire une proc avec return l = T[i]
-															  -- ON RETOURNE QUOI ??? L'INDICE DU TABLEAU OU LA LISTE QUI SE TROUVE A L'INDICE I ??
-		wI : integer;
-		wBool : boolean := true;
-	begin --
-		wI := aFormes'First;
-		while (aFormes(wI)=null) loop
-			wI:=wI+1;
-		end loop;
-
-		return wI;
-	end demarrer;
-
-	procedure demarrer (APoly: in pForme_List_T; Pp: in out Forme_List_Element; CaseCour : out integer) is
-		Ptab: pForme_List_T;
-		i: integer:=0;
-	begin
-		-- TODO
-		Ptab:=APoly;
-
-		-- --if Ptab = null then
-		-- --Put_Line("j'suis dans demarrer, Ptab est nulle ");
-		-- --else
-		-- --Put_Line("j'suis dans demarrer, Ptab est pas nulle \o/");
-		-- --end if;
-
-		-- if (Ptab /= null) then
-		-- --Put_Line("j'suis dans le if du demarrer");
-		-- 	Pp:= Ptab.all(i); --if Pp = null then Put_Line("Pp est nulle"); end if;
-		-- 	--i:=i+1;
-		-- 	if (Pp = null) then
-
-		-- 		while (i < Ptab.all'Last and Pp = null) loop
-		-- 			Pp:=Ptab.all(i);
-		-- 			i:= i+1;
-		-- 		end loop;
-		-- 	end if;
-		-- 	CaseCour:=i;
-		-- end if;
-	end demarrer;
-
-	-- procédure qui permet d'avancer jusqu'à la prochaine liste de formes non vide du tableau de liste de formes
-	procedure avancer (aFormes : in Forme_List_T ; aIndice : in out integer) is -- idem que précédemment ? Qu'est ce qu'on retourne ??
-
-		wC: integer := aIndice + 1; -- compteur commençant à indice + 1, l'indice actuel étant
-								  -- celui d'une cellule dans la liste est non vide.
-		begin
-
-			while (wC /= aFormes'Last and then aFormes(wC)=null) loop
-				wC:=wC+1;
-			end loop;
-
-			aIndice := wC;
-
-	end avancer;
-
-	-- fonction qui retourne le l'indice de la dernière liste du tableau de liste de formes
-	function end_tab (aFormes : in Forme_List_T; aIndice : in integer) return boolean is
-
-		begin
-			return (aIndice = aFormes'Last);
-
-	end end_tab;
-
-	procedure ps_print(aFile : in out File_Type; aSommets : in pSommet_T; aFormes : in pForme_List_T; aMinX, aMaxX, aMinY, aMaxY, aMinZ, aMaxZ : in Float) is
-		proportionx, proportiony : float;
-	begin -- ps_print
-
-		proportionx := 590.0/(aMaxX - aMinX);
-		proportiony := 840.0/(aMaxY - aMinY);
-
-
-	end ps_print;
-
-
 	-- procédure qui prend en paramètre un fichier (PS) et l'initialise (avec les premières lignes de chaque fichier PS)
-	procedure crea_ps (aFile : in out File_Type) is
+	procedure write_head (aFile : in Ada.Text_IO.File_Type) is
 	begin
-			Put(aFile,"%!PS");
-			New_Line(aFile);
-			Put(aFile,"0 setlinewidth");
-			New_Line(aFile);
-	end crea_ps;
+			Ada.Text_IO.Put(aFile,"%!PS");
+			Ada.Text_IO.New_Line(aFile);
+			Ada.Text_IO.Put(aFile,"0 setlinewidth");
+			Ada.Text_IO.New_Line(aFile);
+	end write_head;
 
 	-- procédure qui prend en paramètre un fichier (PS) et le termine (avec les dernières lignes de chaque fichier PS)
-	procedure end_ps (aFile : in out File_Type) is
+	procedure write_tail (aFile : in Ada.Text_IO.File_Type) is
 	begin
-		Put(aFile,"showpage");
-		New_Line(aFile);
-	end end_ps;
+		Ada.Text_IO.Put(aFile,"showpage");
+		Ada.Text_IO.New_Line(aFile);
+	end write_tail;
+
+	procedure write_point(aFile : in Ada.Text_IO.File_Type; aSommet : in Sommet; aRapport, aMinX, aMinY : in Float; aSuffix : in String) is
+		wX : float;
+		wY : float;
+	begin
+		wX := (aSommet.x - aMinX) * aRapport;
+		wY := (aSommet.y - aMinY) * aRapport;
+		Ada.Text_IO.Put(aFile, Float'Image(wX) & Float'Image(wY) & " " & aSuffix);
+	end write_point;
+
+	procedure write_forme(aFile : in Ada.Text_IO.File_Type; aForme : in Forme; aSommets : in pSommet_T; aRapport, aMinX, aMinY : in Float) is
+	begin
+
+		if(aForme.size > 0) then
+			-- ecrit "x0 y0 moveto"
+			write_point(aFile, aSommets.all(aForme.sommets.all(0)), aRapport, aMinX, aMinY, "moveto");Ada.Text_IO.New_Line(aFile);
+			for wI in 1..(aForme.size-1) loop
+				-- ecrit "xi yi lineto"
+				write_point(aFile, aSommets.all(aForme.sommets.all(wI)), aRapport, aMinX, aMinY, "lineto");Ada.Text_IO.New_Line(aFile);
+			end loop;
+			-- ecrit "x0 y0 lineto"
+			write_point(aFile, aSommets.all(aForme.sommets.all(0)), aRapport, aMinX, aMinY, "lineto");Ada.Text_IO.New_Line(aFile);
+			-- ecrit "sauvegarde" la figure et set les couleurs de contours et remplissage
+			Ada.Text_IO.Put(aFile, "gsave");Ada.Text_IO.New_Line(aFile);
+			Ada.Text_IO.Put(aFile, "1 setgray");Ada.Text_IO.New_Line(aFile);
+			Ada.Text_IO.Put(aFile, "fill");Ada.Text_IO.New_Line(aFile);
+			Ada.Text_IO.Put(aFile, "grestore");Ada.Text_IO.New_Line(aFile);
+			Ada.Text_IO.Put(aFile, "0 setgray");Ada.Text_IO.New_Line(aFile);
+			Ada.Text_IO.Put(aFile, "stroke");Ada.Text_IO.New_Line(aFile);
+		end if;
+
+	end write_forme;
+
+	procedure write_formes(aFile : in Ada.Text_IO.File_Type; aFormes : in pForme_List_T; aSommets : in pSommet_T; aSizeFormes : in Integer; aMinX, aMaxX, aMinY, aMaxY : in Float) is
+		wRapportX : float;
+		wRapportY : float;
+		wRapport : float;
+	begin
+		wRapportX := 590.0 / (aMaxX - aMinX);
+		wRapportY := 480.0 / (aMaxY - aMinY);
+		if(wRapportX < wRapportY) then
+			wRapport := wRapportX;
+		else
+			wRapport := wRapportY;
+		end if;
+
+		demarrer(aFormes, aSizeFormes);
+		while not finDeSequence loop
+			write_forme(aFile, elementCourant, aSommets, wRapport, aMinX, aMinY);
+			avancer;
+		end loop;
+	end write_formes;
+
+	procedure forme_list_t_to_ps (aFileName : in String; aFormes : in pForme_List_T; aSommets : in pSommet_T; aSizeFormes : in Integer; aMinX, aMaxX, aMinY, aMaxY : in Float) is
+		wPS : Ada.Text_IO.File_Type;
+	begin -- forme_list_t_to_ps
+		Ada.Text_IO.Create(wPS, Ada.Text_IO.OUT_File, aFileName);
+		-- remplace le fichier si il existe déja
+
+		write_head(wPS);
+		write_formes(wPS, aFormes, aSommets, aSizeFormes, aMinX, aMaxX, aMinY, aMaxY);
+		write_tail(wPS);
+	end forme_list_t_to_ps;
 
 end ps_file;

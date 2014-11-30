@@ -1,5 +1,3 @@
-with off_struct; use off_struct;
-
 package body tri_packet is
 
 	function getMinZForme(aForme : Forme; aSommets : pSommet_T) return Float is
@@ -60,7 +58,7 @@ package body tri_packet is
 		-- -- ajouter forme dans tableau à l'indice trouvé
 		while wCourant /= NULL loop
 			wIndex_courant := Integer(Float'Floor(Float(aNbFormes) * ((getMinZForme(wCourant.all.F, aSommets) - aMinZ) / (aMaxZ-aMinZ))));
-			if(wIndex_courant < aNbFormes) then
+			if(wIndex_courant < aNbFormes + 1 ) then
 				-- insere dans aFormesSorted au bon index
 				aFormesSorted(wIndex_courant) := insertForme(aFormesSorted(wIndex_courant), aSommets, wCourant.all.F);
 			-- else

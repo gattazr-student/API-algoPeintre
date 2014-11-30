@@ -1,7 +1,5 @@
-with off_struct;
-
-with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+with Ada.Text_IO;
+with Ada.Integer_Text_IO;
 with Ada.Float_Text_IO;
 
 package body off_file is
@@ -10,11 +8,11 @@ package body off_file is
 		off : String(1..3);
 		Last : integer; -- variable obligatoire pour utiliser la fonction "Get_Line"
 	begin -- utiilise le fichier ouvert off et récupère le nombre de sommets et de faces du fichier
-		Get_Line (aFile,off,Last);
+		Ada.Text_IO.Get_Line (aFile,off,Last);
 		If (off="OFF") then
-			Get(aFile, aNbSommets);
-			Get(aFile, aNbFormes);
-			Skip_Line(aFile, 1);
+			Ada.Integer_Text_IO.Get(aFile, aNbSommets);
+			Ada.Integer_Text_IO.Get(aFile, aNbFormes);
+			Ada.Text_IO.Skip_Line(aFile, 1);
 		end if;
 
 	end read_head;
