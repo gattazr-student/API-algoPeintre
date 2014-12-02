@@ -56,8 +56,10 @@ package body ps_file is
 		wRapportY : float;
 		wRapport : float;
 	begin
-		wRapportX := 590.0 / (aMaxX - aMinX);
-		wRapportY := 480.0 / (aMaxY - aMinY);
+		wRapportX := abs(590.0 / (aMaxX - aMinX));
+		--wRapportY := 480.0 / (aMaxY - aMinY) --mauvaise ordonnée max
+		wRapportY := abs(840.0 / (aMaxY - aMinY));
+
 		if(wRapportX < wRapportY) then
 			wRapport := wRapportX;
 		else
