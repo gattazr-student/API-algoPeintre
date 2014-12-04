@@ -4,10 +4,14 @@ with Ada.Float_Text_IO;
 
 package body off_file is
 
+	--/**
+	-- * procedure read_head
+	-- * Description :  Utilise le fichier ouvert off et récupère le nombre de sommets et de faces du fichier
+	-- */
 	procedure read_head(aFile : in Ada.Text_IO.File_Type; aNbSommets : out integer ; aNbFormes : out integer) is
 		off : String(1..3);
 		Last : integer; -- variable obligatoire pour utiliser la fonction "Get_Line"
-	begin -- utiilise le fichier ouvert off et récupère le nombre de sommets et de faces du fichier
+	begin
 		Ada.Text_IO.Get_Line (aFile,off,Last);
 		If (off="OFF") then
 			Ada.Integer_Text_IO.Get(aFile, aNbSommets);
@@ -17,9 +21,12 @@ package body off_file is
 
 	end read_head;
 
-
+	--/**
+	-- * procedure read_sommets
+	-- * Description :  Récupère la liste des sommet du fichier File(fichier off) et la stock dans un tableau de point
+	-- */
 	procedure read_sommets(aFile : in Ada.Text_IO.File_Type; aNbSommets : in integer; aSommets : out pSommet_T) is
-	begin -- récupère la liste des sommet du fichier File(fichier off) et la stock dans un tableau de point
+	begin 
 		aSommets := new Sommet_T(0..(aNbSommets-1));
 		for wI in 0..(aNbSommets-1) loop
 			Ada.Float_Text_IO.Get(aFile, aSommets(wI).x);
@@ -29,11 +36,15 @@ package body off_file is
 
 	end read_sommets;
 
+	--/**
+	-- * procedure read_formes
+	-- * Description :  Récupère la liste des formes du fichier aFile (fichier off) et la stock dans une liste chainée de Formes
+	-- */
 	procedure read_formes(aFile : in Ada.Text_IO.File_Type; aNbFormes : in integer; aFormes : out Forme_List) is
 		wPred : Forme_List;
 		wCourant : Forme_List;
 		wSize : integer;
-	begin -- récupère la liste des triangles du fichier aFile(fichier off) et la stock dans une liste chainé de triangle
+	begin 
 
 		aFormes := NULL;
 
@@ -51,7 +62,7 @@ package body off_file is
 			wPred := aFormes;
 
 			for wI in 1..(aNbFormes-1) loop
-				-- rajoute un élement dans la liste de formes
+				-- Rajoute un élement dans la liste de formes
 				wCourant := new Forme_List_Element;
 				Ada.Integer_Text_IO.Get(aFile, wSize);
 				wCourant.all.F.size := wSize;
@@ -65,14 +76,19 @@ package body off_file is
 				wPred := wCourant;
 			end loop;
 
-			wCourant.all.succ := NULL; -- le dernier triangle n'a pas de successeur
+			wCourant.all.succ := NULL; -- La dernière formes n'a pas de successeur
 		end if;
 
 	end read_formes;
 
+
+	--/**
+	-- * procedure file_to_sommets_formes
+	-- * Description : Ouvre un fichier OFF, le lit et retourne un pointeur sur un tableau de point et une liste doublement chainée de formes
+	-- */
 	procedure file_to_sommets_formes(aFileName : in String; aNbSommets, aNbFormes: out integer; aSommets : out pSommet_T; aFormes : out Forme_List) is
 		wOFF : Ada.Text_IO.File_Type;
-	begin -- lit un fichier OFF et retourne un tableau de point et une liste doublement chainé de triangle
+	begin -- lit un fichier OFF et retourne un  pointeur sur un tableau de point et une liste doublement chainée de formes
 
 		Ada.Text_IO.Open(wOFF, Ada.Text_IO.In_File, aFileName);
 
