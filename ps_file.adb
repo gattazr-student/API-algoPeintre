@@ -19,27 +19,27 @@ package body ps_file is
 		Ada.Text_IO.New_Line(aFile);
 	end write_tail;
 
-	procedure write_point(aFile : in Ada.Text_IO.File_Type; aSommet : in Sommet; aRapport, aMinX, aMinY : in Float; aSuffix : in String) is
+	procedure write_point(aFile : in Ada.Text_IO.File_Type; aSommet : in Sommet; aRapport, aMinX, aAddX, aMinY, aAddY : in Float; aSuffix : in String) is
 		wX : float;
 		wY : float;
 	begin
-		wX := (aSommet.x - aMinX) * aRapport;
-		wY := (aSommet.y - aMinY) * aRapport;
+		wX := (aSommet.x - aMinX) * aRapport + aAddX;
+		wY := (aSommet.y - aMinY) * aRapport + aAddY;
 		Ada.Text_IO.Put(aFile, Float'Image(wX) & Float'Image(wY) & " " & aSuffix);
 	end write_point;
 
-	procedure write_forme(aFile : in Ada.Text_IO.File_Type; aForme : in Forme; aSommets : in pSommet_T; aRapport, aMinX, aMinY : in Float) is
+	procedure write_forme(aFile : in Ada.Text_IO.File_Type; aForme : in Forme; aSommets : in pSommet_T; aRapport, aMinX, aAddX, aMinY, aAddY : in Float) is
 	begin
 
 		if(aForme.size > 0) then
 			-- ecrit "x0 y0 moveto"
-			write_point(aFile, aSommets.all(aForme.sommets.all(0)), aRapport, aMinX, aMinY, "moveto");Ada.Text_IO.New_Line(aFile);
+			write_point(aFile, aSommets.all(aForme.sommets.all(0)), aRapport, aMinX, aAddX, aMinY, aAddY, "moveto");Ada.Text_IO.New_Line(aFile);
 			for wI in 1..(aForme.size-1) loop
 				-- ecrit "xi yi lineto"
-				write_point(aFile, aSommets.all(aForme.sommets.all(wI)), aRapport, aMinX, aMinY, "lineto");Ada.Text_IO.New_Line(aFile);
+				write_point(aFile, aSommets.all(aForme.sommets.all(wI)), aRapport, aMinX, aAddX, aMinY, aAddY, "lineto");Ada.Text_IO.New_Line(aFile);
 			end loop;
 			-- ecrit "x0 y0 lineto"
-			write_point(aFile, aSommets.all(aForme.sommets.all(0)), aRapport, aMinX, aMinY, "lineto");Ada.Text_IO.New_Line(aFile);
+			write_point(aFile, aSommets.all(aForme.sommets.all(0)), aRapport, aMinX, aAddX, aMinY, aAddY, "lineto");Ada.Text_IO.New_Line(aFile);
 			-- ecrit "sauvegarde" la figure et set les couleurs de contours et remplissage
 			Ada.Text_IO.Put(aFile, "gsave");Ada.Text_IO.New_Line(aFile);
 			Ada.Text_IO.Put(aFile, "1 setgray");Ada.Text_IO.New_Line(aFile);
@@ -55,20 +55,25 @@ package body ps_file is
 		wRapportX : float;
 		wRapportY : float;
 		wRapport : float;
+		wAddX : float;
+		wAddY : float;
 	begin
-		wRapportX := abs(590.0 / (aMaxX - aMinX));
-		--wRapportY := 480.0 / (aMaxY - aMinY) --mauvaise ordonnée max
-		wRapportY := abs(840.0 / (aMaxY - aMinY));
+		wRapportX := 575.0 / (aMaxX - aMinX);
+		wRapportY := 822.0 / (aMaxY - aMinY);
 
 		if(wRapportX < wRapportY) then
 			wRapport := wRapportX;
+			wAddX := 10.0;
+			wAddY := (832.0 - (aMaxY - aMinY) * wRapport) / 2.0;
 		else
 			wRapport := wRapportY;
+			wAddX := (585.0 - (aMaxX - aMinX) * wRapport) / 2.0;
+			wAddY := 10.0;
 		end if;
 
 		demarrer(aFormes, aSizeFormes);
 		while not finDeSequence loop
-			write_forme(aFile, elementCourant, aSommets, wRapport, aMinX, aMinY);
+			write_forme(aFile, elementCourant, aSommets, wRapport, aMinX, wAddX, aMinY, wAddY);
 			avancer;
 		end loop;
 	end write_formes;
