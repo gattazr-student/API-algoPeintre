@@ -23,7 +23,16 @@ package body tri_packet is
 		wMinZ_courant : float;
 	begin
 		wNewForme := new Forme_List_Element;
-		wNewForme.all.F := aForme;
+
+		-- fait une copie complète de la forme.
+		-- copie egalement tous le tableau alloué dynamiquement pour ne pas lier
+		-- le cycle de vie des deux objets
+		wNewForme.F.size := aForme.size;
+		wNewForme.F.sommets := new Integer_T(0..(aForme.size-1));
+		for wI in 0..(aForme.size-1) loop
+			wNewForme.F.sommets(wI) := aForme.sommets(wI);
+		end loop;
+
 		wMinZ_courant := getMinZForme(aForme, aSommets);
 
 		if (wReturned = NULL) then

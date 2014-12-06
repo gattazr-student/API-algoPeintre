@@ -1,6 +1,6 @@
 # Makefile
-CC=gcc-4.6
-EXECUTABLES= algo_peintre algo_peintre_perf algo_peintre_mem
+CC=gcc
+EXECUTABLES= algo_peintre algo_peintre_perf
 OBJS= ${SRCS:.adb=.o}
 ALIS= ${SRCS:.adb=.ali}
 

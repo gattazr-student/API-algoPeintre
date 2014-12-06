@@ -1,5 +1,4 @@
 with Ada.Unchecked_Deallocation;
-with Ada.Text_IO;
 
 package body off_struct is
 
@@ -61,10 +60,8 @@ package body off_struct is
 
 	procedure libererForme_List (aForme_List : in out Forme_List) is
 		wSuivant : Forme_List;
-		wI : Integer := 0;
 	begin
 		while aForme_List /= NULL loop
-			wI := wI + 1;
 			-- sauvegarde l'adresse du suivant
 			wSuivant := aForme_List.all.succ;
 
@@ -75,7 +72,6 @@ package body off_struct is
 			-- mise en place du sauvegarde comme le courant
 			aForme_List := wSuivant;
 		end loop;
-		Ada.Text_IO.Put(Integer'image(wI));
 	end libererForme_List;
 
 	procedure libererForme_List_T (aForme_List_T : in out pForme_List_T; aNbFormes : in integer) is
@@ -83,9 +79,9 @@ package body off_struct is
 		-- TODO: comprendre pourquoi la libération des listes empèche une seconde utilisation du programme
 		-- Lorsque cette boucle est effectué, l'appel à un "new" suivant va mettre le processus dans l'état S.
 		-- Le programme ne plante pas, il s'arrete sans jamais redemarer.
-		-- for wI in 0..aNbFormes loop
-		-- 	libererForme_List(aForme_List_T.all(wI));
-		-- end loop;
+		for wI in 0..aNbFormes loop
+			libererForme_List(aForme_List_T.all(wI));
+		end loop;
 		freeForme_List_T(aForme_List_T);
 	end libererForme_List_T;
 
