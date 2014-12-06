@@ -69,7 +69,7 @@ begin
 		else
 			IO.Create (wPerfFile, IO.Out_File, "tests/perf.csv");
 			IO.Put_line(wPerfFile, "nbSommets, nbFormes, TTotal, TLectureOff, TGetMax, TTri, TEcriturePS, TLiberation;");
-			for i in 1..10 loop
+			for wI in 1..10000 loop
 				wTempsInit := Ada.Real_Time.Clock;
 
 				file_to_sommets_formes(SU.To_String(wInFileName), wNbSommets, wNbFormes, wSommets, wFormes);
@@ -104,7 +104,10 @@ begin
 				IO.Put(wPerfFile, Integer'image(wTempsGetMax / Milliseconds(1)) & "," );
 				IO.Put(wPerfFile, Integer'image(wTempsTri / Milliseconds(1)) & "," );
 				IO.Put(wPerfFile, Integer'image(wTempsEcriturePS / Milliseconds(1)) & "," );
-				IO.Put_line(wPerfFile, Integer'image(wTempsDealloc / Milliseconds(1)) & "," );
+				IO.Put_line(wPerfFile, Integer'image(wTempsDealloc / Milliseconds(1)) & ";" );
+				if(wI mod 1000 = 0) then
+					IO.Put(".");
+				end if;
 			end loop;
 			IO.Close (wPerfFile);
 		end if;
