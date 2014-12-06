@@ -87,6 +87,8 @@ package body ps_file is
 		write_head(wPS);
 		write_formes(wPS, aFormes, aSommets, aSizeFormes, aMinX, aMaxX, aMinY, aMaxY);
 		write_tail(wPS);
+
+		Ada.Text_IO.Close(wPS);
 	end forme_list_t_to_ps;
 
 end ps_file;

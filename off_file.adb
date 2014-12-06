@@ -26,7 +26,7 @@ package body off_file is
 	-- * Description :  Récupère la liste des sommet du fichier File(fichier off) et la stock dans un tableau de point
 	-- */
 	procedure read_sommets(aFile : in Ada.Text_IO.File_Type; aNbSommets : in integer; aSommets : out pSommet_T) is
-	begin 
+	begin
 		aSommets := new Sommet_T(0..(aNbSommets-1));
 		for wI in 0..(aNbSommets-1) loop
 			Ada.Float_Text_IO.Get(aFile, aSommets(wI).x);
@@ -44,7 +44,7 @@ package body off_file is
 		wPred : Forme_List;
 		wCourant : Forme_List;
 		wSize : integer;
-	begin 
+	begin
 
 		aFormes := NULL;
 
@@ -95,6 +95,8 @@ package body off_file is
 		read_head(wOFF, aNbSommets, aNbFormes); -- lit le header et la premier ligne du fichier
 		read_sommets(wOFF, aNbSommets, aSommets); -- lit les sommets et les mets dans un tableau pointé par ptab_point
 		read_formes(wOFF, aNbFormes, aFormes); -- lit les formes et let mets dans le tableau tab_list_formes
+
+		Ada.Text_IO.Close(wOff);
 
 	end file_to_sommets_formes;
 end off_file;

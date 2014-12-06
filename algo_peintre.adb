@@ -8,7 +8,7 @@ with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 
 procedure algo_peintre is
-	-- renomme les deux packages pour un accès simplifié
+	-- renomme les trois packages pour un accès simplifié
 	package CLI renames Ada.Command_Line;
 	package IO renames Ada.Text_IO;
 	package SU renames Ada.Strings.Unbounded;
@@ -39,7 +39,7 @@ procedure algo_peintre is
 		return False;
 	end file_exists;
 
-	-- Variables utilisé pendant la section DEBUG
+	-- Variables utilisés pendant la section DEBUG
 	DEBUG: constant boolean := true;
 	wFormeCourante : Forme_List;
 	wJ : Integer;
@@ -112,15 +112,16 @@ begin
 	if CLI.Argument_Count < 2 then
 		IO.Put("Not enough args");
 	else
+
 		wInFileName := SU.To_Unbounded_String(CLI.argument(1));
 		wOutFileName := SU.To_Unbounded_String(CLI.argument(2));
 		if not file_exists(SU.To_String(wInFileName)) then
 			IO.Put("No such file");
 		else
-			-- TODO : rajouter timer
-			file_to_sommets_formes(SU.To_String(wInFileName), wNbSommets, wNbFormes, wSommets, wFormes);
 
+			file_to_sommets_formes(SU.To_String(wInFileName), wNbSommets, wNbFormes, wSommets, wFormes);
 			getMinMaxXYZ(wSommets, wNbSommets, wMinX, wMaxX, wMinY, wMaxY, wMinZ, wMaxZ);
+
 			-- Tri par paquet
 			-- le tri est effectué après la lecture du fichier pour permettre une meilleur séparation du problème
 			-- Effectuer les deux en même temps implique une complexité de n alors qu'effectuer l'un puis l'autre
@@ -130,14 +131,10 @@ begin
 
 			forme_list_t_to_ps(SU.To_String(wOutFileName), wFormesSorted, wSommets, wNbFormes+1, wMinX, wMaxX, wMinY, wMaxY);
 
-
 			if DEBUG then
 				affichage_debug;
 			end if;
 
-
-
-			-- !!! DEALLOCATE !!!
 			libererSommet_T(wSommets);
 			libererForme_List(wFormes);
 			libererForme_List_T(wFormesSorted, wNbFormes);
