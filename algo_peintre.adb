@@ -1,12 +1,16 @@
-with Ada.Command_Line;
 with off_struct; use off_struct;
 with off_file; use off_file;
 with tri_packet; use tri_packet;
 with ps_file; use ps_file;
 
+with Ada.Command_Line;
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 
+--
+-- procedure algo_peintre
+-- Procedure principale du programme algo_peintre. Au cours de cette procédure, un fichier off va être lu, son contenu trié et un fichier ps contenant une représentation 2D du fichier off sera crée.
+--
 procedure algo_peintre is
 	-- renomme les trois packages pour un accès simplifié
 	package CLI renames Ada.Command_Line;
@@ -28,6 +32,12 @@ procedure algo_peintre is
 	wMinZ : Float;
 	wMaxZ : Float;
 
+	--
+	-- fonction file_exists
+	-- la fonction retourne vrai si le fichier donnée en paramètre existe.
+	-- @param aFileName : chemin vers le fichier à tester
+	-- @return boolean : true si fichier aFileName existe, false sinon
+	--
 	function file_exists (aFileName : String) return Boolean is
 		wFile : Ada.Text_IO.File_Type;
 	begin
@@ -44,43 +54,41 @@ procedure algo_peintre is
 	wFormeCourante : Forme_List;
 	wJ : Integer;
 
+	--
+	-- procedure affichage_debug
+	-- fait un affichage dans stdout de toutes les structures de données utlisés pendant le programme principale
+	--
 	procedure affichage_debug is
 	begin
 		IO.New_Line;
-		IO.Put("-- AFFICHAGE DE TESTS --");
-		IO.New_Line;
-		IO.Put("    Sommets : " & integer'Image(wNbSommets));
-		IO.New_Line;
-		IO.Put("    Formes : " & integer'Image(wNbFormes));
-		IO.New_Line;
+		IO.Put_Line("-- AFFICHAGE DE TESTS --");
+		IO.Put_Line("    Sommets : " & integer'Image(wNbSommets));
+		IO.Put_Line("    Formes : " & integer'Image(wNbFormes));
 		IO.New_Line;
 
-		IO.Put("    -- Sommets --");
-		IO.New_Line;
+		-- Affiche les sommets
+		IO.Put_Line("    -- Sommets --");
 		for wI in 0..(wNbSommets-1) loop
 			IO.Put("        " & integer'Image(wI) & " : ");
-			IO.Put(float'Image(wSommets(wI).x) & " -" & float'Image(wSommets(wI).y) & " -" & float'Image(wSommets(wI).z));
-			IO.New_Line;
+			IO.Put_Line(float'Image(wSommets(wI).x) & " -" & float'Image(wSommets(wI).y) & " -" & float'Image(wSommets(wI).z));
 		end loop;
 		IO.New_Line;
 
-		IO.Put("    -- Formes --");
-		IO.New_Line;
+		-- Affiche les fomes
+		IO.Put_Line("    -- Formes --");
 		wFormeCourante := wFormes;
 		wJ := 0;
-		if wFormeCourante /= NULL then
-			loop
-				IO.Put("        " & integer'Image(wJ) & " : (" & integer'Image(WFormeCourante.all.F.size) &" )");
-				for i in 0..(WFormeCourante.all.F.size-1) loop
-					IO.Put(integer'Image(WFormeCourante.all.F.sommets.all(i)));
-				end loop;
-				IO.New_Line;
-				exit when WFormeCourante.all.succ = NULL;
-				WFormeCourante := WFormeCourante.all.succ;
-				wJ := wJ + 1;
+		while wFormeCourante /= NULL loop
+			IO.Put("        " & integer'Image(wJ) & " : (" & integer'Image(WFormeCourante.all.F.size) &" )");
+			for i in 0..(WFormeCourante.all.F.size-1) loop
+				IO.Put(integer'Image(WFormeCourante.all.F.sommets.all(i)));
 			end loop;
-		end if;
+			IO.New_Line;
+			WFormeCourante := WFormeCourante.all.succ;
+			wJ := wJ + 1;
+		end loop;
 
+		-- Affiche le tableau de liste
 		IO.Put("    -- Tableau trié --");
 		IO.New_Line;
 		wJ := 0;
@@ -100,41 +108,42 @@ procedure algo_peintre is
 					wJ := wJ + 1;
 				end loop;
 			end if;
-			IO.Put("]");
-			IO.New_Line;
+			IO.Put_Line("]");
 		end loop;
 
-		IO.Put("-- FIN AFFICHAGE DES TESTS --");
-		IO.New_Line;
+		IO.Put_Line("-- FIN AFFICHAGE DES TESTS --");
 	end affichage_debug;
 begin
-
+	-- si le programme est lancé avec moins de 2 arguments
 	if CLI.Argument_Count < 2 then
-		IO.Put("Not enough args");
+		IO.Put_Line("Le programme doit être lancé avec 2 arguments");
+		IO.Put_Line("Usage: algo_peintre path/to/OffFile path/to/PsFile");
 	else
 
 		wInFileName := SU.To_Unbounded_String(CLI.argument(1));
 		wOutFileName := SU.To_Unbounded_String(CLI.argument(2));
 		if not file_exists(SU.To_String(wInFileName)) then
-			IO.Put("No such file");
+			IO.Put_Line("Le fichier " & SU.To_String(wInFileName) & " n'existe pas");
+			IO.Put_Line("Usage: algo_peintre path/to/OffFile path/to/PsFile");
 		else
-
+			-- lecture du fichier off
 			file_to_sommets_formes(SU.To_String(wInFileName), wNbSommets, wNbFormes, wSommets, wFormes);
+
+			-- récupère les mins et maxs sur tous les axes
 			getMinMaxXYZ(wSommets, wNbSommets, wMinX, wMaxX, wMinY, wMaxY, wMinZ, wMaxZ);
 
 			-- Tri par paquet
-			-- le tri est effectué après la lecture du fichier pour permettre une meilleur séparation du problème
-			-- Effectuer les deux en même temps implique une complexité de n alors qu'effectuer l'un puis l'autre
-			-- implique une complexité de 2n qui est donc une complexité de n aussi.
-			-- La compléxité étant la même, nous avons donc décidé de séparer le tri de la lecture du fichier.
 			triParPaquet(wFormes, wSommets, wNbFormes, wMinZ, wMaxZ, wFormesSorted);
 
+			-- Ecriture du fichier ps
 			forme_list_t_to_ps(SU.To_String(wOutFileName), wFormesSorted, wSommets, wNbFormes+1, wMinX, wMaxX, wMinY, wMaxY);
 
+			-- affichage de debug
 			if DEBUG then
 				affichage_debug;
 			end if;
 
+			-- Libération de la mémoire alloué
 			libererSommet_T(wSommets);
 			libererForme_List(wFormes);
 			libererForme_List_T(wFormesSorted, wNbFormes);
