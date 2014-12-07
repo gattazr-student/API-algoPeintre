@@ -19,7 +19,7 @@
 
 \section{Introduction}
 
-Voici le compte rendu du projet "\textit{Algorithme du peintre}". 
+Voici le compte rendu du projet "\textit{Algorithme du peintre}".
 Vous trouverez ci-joint à ce compte rendu le répertoire "source" dans lequel se trouveront l'intégralité des sources de ce projet.
 \begin{enumerate}
 \item Introduction
@@ -42,36 +42,46 @@ Vous trouverez ci-joint à ce compte rendu le répertoire "source" dans lequel s
 \todo[inline, color=blue!40]{To Do}
 
 \section{Comment utiliser l'application}
-\subsection{Etape 1 : Compilation du fichier reçu}
+\subsection{Compilation des sources}
+Le dossier source contient un makefile. Pour construire les executables, il faut donc executer la commande suivante :
+\begin{lstlisting}
+	make
+\end{lstlisting}
+Si la compilation s'est bien déroulé, les éxécutables algo\_peintre et algo\_peintre\_perf ont été crés.
 
-Si vous lisez ce document, c'est que vous avez correctement reçu l'archive du projet.
-\newline
-Créez un dossier temporaire nommé tempProjet. Pour celà effectuer la commande
+\subsection{algo\_peintre}
+algo\_peintre est un programme qui prend en entré un fichier off et qui crée un fichier ps, contenant la projection sur z de la forme définie dans le fichier off.
+
+algo\_peintre se lance de la façon suivante :
 \begin{lstlisting}
-	mkdir ~/tempProjet
+	algo_peintre path/to/off/file path/to/ps/file
 \end{lstlisting}
-Copiez l'archive dans le répertoire créé.
+
+Pour visualiser le fichier ps, nous vous conseillons d'utiliser le programme gv.
+
+\subsection{algo\_peintre\_perf}
+algo\_peintre\_perf est un programme qui permet d'évaluer les performances de algo\_peintre. Prennant en entréé un fichier off, ce programme va executer l'algorithme de algo\_peintre 1000 fois et stocker les performances de chaque exécutions dans un fichier csv.
+
+algo\_peintre\_perf se lance de la façon suivante :
 \begin{lstlisting}
-	cp Telechargements/nom_archive.tgz ~/tempProjet
+	algo_peintre_perf path/to/off/file path/to/csv/file
 \end{lstlisting}
-Décompressez l'archive .tar.gz à l'aide de la commande 
-\begin{lstlisting} 
-	tar zxvf ~/nom_archive.tgz
-\end{lstlisting}
-Vous trouverez alors un fichier 
-\begin{lstlisting} 
+
+
+
+\begin{lstlisting}
 	makefile
 \end{lstlisting}
-Il vous suffit ensuite d'éffectuer la commande 
-\begin{lstlisting} 
-	make 
+Il vous suffit ensuite d'éffectuer la commande
+\begin{lstlisting}
+	make
 \end{lstlisting}
-Pour exécuter le programme compilé il faut ensuite 
-\begin{lstlisting} 
+Pour exécuter le programme compilé il faut ensuite
+\begin{lstlisting}
 	./algopeintre
 \end{lstlisting}
 Ce programme génère un fichier nommé
-\begin{lstlisting} 
+\begin{lstlisting}
 	nom_fichier.ps
 \end{lstlisting}
 Qui est ensuite visualisable.
@@ -82,7 +92,7 @@ Par conséquent notre protocole de test consiste à détécter une éventuelle f
 
 
 \section{Evaluation des performances}
-Afin de tester les performances du programme nous avons élaborer le protocole suivant. Nous rajoutons des instructions ada.Real\_time afin de vérifié le temps d'éxécution des différentes fonctions. Nous sommes conscient du fait que ces valeurs sont fortement liées à la capacité de la machine choisie pour effectuer ces tests. Par conséquent nous effectuons 5 relevés de temps. 
+Afin de tester les performances du programme nous avons élaborer le protocole suivant. Nous rajoutons des instructions ada.Real\_time afin de vérifié le temps d'éxécution des différentes fonctions. Nous sommes conscient du fait que ces valeurs sont fortement liées à la capacité de la machine choisie pour effectuer ces tests. Par conséquent nous effectuons 5 relevés de temps.
 \begin{enumerate}
 \item Temps de lecture du fichier .off
 \item Temps de récupération des maximums en x,y et z
@@ -95,7 +105,7 @@ Nous obtenons les résultats suivants pour les tests d'éxécution.
 
 
 \section{Difficultés rencontrées}
- 
+
 \todo{A modifier si nécessaire}
 
 
