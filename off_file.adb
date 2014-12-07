@@ -80,12 +80,12 @@ package body off_file is
 					Ada.Integer_Text_IO.Get(aFile, wCourant.all.F.sommets(wJ));
 				end loop;
 
-				wPred.succ := wCourant;
+				wCourant.all.succ := NULL; -- La dernière forme n'a pas de successeur
+
+				wPred.all.succ := wCourant;
 
 				wPred := wCourant;
 			end loop;
-
-			wCourant.all.succ := NULL; -- La dernière formes n'a pas de successeur
 		end if;
 
 	end read_formes;
