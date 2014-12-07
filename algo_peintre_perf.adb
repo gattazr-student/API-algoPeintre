@@ -71,13 +71,15 @@ procedure algo_peintre_perf is
 begin
 	-- si le programme est lancé avec moins de 2 arguments
 	if CLI.Argument_Count < 2 then
-		IO.Put("Not enough args");
+		IO.Put_Line("Le programme doit être lancé avec 2 arguments");
+		IO.Put_Line("Usage: algo_peintre path/to/OffFile path/to/CSVFile");
 	else
 
 		wInFileName := SU.To_Unbounded_String(CLI.argument(1));
 		wOutFileName := SU.To_Unbounded_String(CLI.argument(2));
 		if not file_exists(SU.To_String(wInFileName)) then
-			IO.Put("No such file");
+			IO.Put_Line("Le fichier " & SU.To_String(wInFileName) & " n'existe pas");
+			IO.Put_Line("Usage: algo_peintre path/to/OffFile path/to/CSVFile");
 		else
 			IO.Create (wPerfFile, IO.Out_File, SU.To_String(wOutFileName));
 			IO.Put_line(wPerfFile, "nbSommets, nbFormes, TTotal, TLectureOff, TGetMax, TTri, TEcriturePS, TLiberation;");

@@ -117,14 +117,14 @@ begin
 	-- si le programme est lancé avec moins de 2 arguments
 	if CLI.Argument_Count < 2 then
 		IO.Put_Line("Le programme doit être lancé avec 2 arguments");
-		IO.Put_Line("Usage: algo_peintre path/to/OffFile path/to/PsFile");
+		IO.Put_Line("Usage: algo_peintre path/to/OffFile path/to/PSFile");
 	else
 
 		wInFileName := SU.To_Unbounded_String(CLI.argument(1));
 		wOutFileName := SU.To_Unbounded_String(CLI.argument(2));
 		if not file_exists(SU.To_String(wInFileName)) then
 			IO.Put_Line("Le fichier " & SU.To_String(wInFileName) & " n'existe pas");
-			IO.Put_Line("Usage: algo_peintre path/to/OffFile path/to/PsFile");
+			IO.Put_Line("Usage: algo_peintre path/to/OffFile path/to/PSFile");
 		else
 			-- lecture du fichier off
 			file_to_sommets_formes(SU.To_String(wInFileName), wNbSommets, wNbFormes, wSommets, wFormes);
