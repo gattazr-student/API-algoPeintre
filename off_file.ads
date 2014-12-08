@@ -4,7 +4,7 @@ package off_file is
 
 	--
 	-- procedure file_to_sommets_formes
-	-- Ouvre un fichier OFF, le lit et retourne un pointeur sur un tableau de point et une liste doublement chainée de formes
+	-- Ouvre un fichier OFF, le lit et retourne un pointeur sur un tableau de point et une liste chainée de formes
 	-- @param aFileName in : fichier off à lire
 	-- @param aNbSommets out : Nombre de sommets contenu dans le fichier off
 	-- @param aNbFormes out : Nombre de Formes contenu dans le fichier off

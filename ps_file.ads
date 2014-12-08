@@ -9,7 +9,7 @@ package ps_file is
 	-- @param aFileName in : Chemin vers le fichier à écrire
 	-- @param aFormes in : Liste de formes à écrire
 	-- @param aSommets in : Tableau contanant les sommets référencés dans les Formes
-	-- @param aSizeFormes in : Taille du tableau aFormes
+	-- @param aSizeFormes in : Taille de la liste aFormes
 	-- @param aMinX in : valeur minimum en x prise par les sommets dans aSommets
 	-- @param aMaxX in : valeur maximum en x prise par les sommets dans aSommets
 	-- @param aMinY in : valeur minimum en y prise par les sommets dans aSommets

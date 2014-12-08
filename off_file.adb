@@ -93,7 +93,7 @@ package body off_file is
 
 	--
 	-- procedure file_to_sommets_formes
-	-- Ouvre un fichier OFF, le lit et retourne un pointeur sur un tableau de point et une liste doublement chainée de formes
+	-- Ouvre un fichier OFF, le lit et retourne un pointeur sur un tableau de point et une liste chainée de formes
 	-- @param aFileName in : fichier off à lire
 	-- @param aNbSommets out : Nombre de sommets contenu dans le fichier off
 	-- @param aNbFormes out : Nombre de Formes contenu dans le fichier off
@@ -102,7 +102,7 @@ package body off_file is
 	--
 	procedure file_to_sommets_formes(aFileName : in String; aNbSommets, aNbFormes: out integer; aSommets : out pSommet_T; aFormes : out Forme_List) is
 		wOFF : Ada.Text_IO.File_Type;
-	begin -- lit un fichier OFF et retourne un  pointeur sur un tableau de point et une liste doublement chainée de formes
+	begin
 
 		Ada.Text_IO.Open(wOFF, Ada.Text_IO.In_File, aFileName);
 
